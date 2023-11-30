@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+<title>Decent Editor</title>
+<link rel="icon" type="image/x-icon" href="icon.ico">
+<style type="text/css" media="screen">
+.fa{
+  cursor: pointer;
+  padding:3px;
+}
+::-webkit-scrollbar {
+    background: rgb(29, 29, 29);
+    border-radius: 10px;
+    width: 5px;
+    height:5px;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(87, 87, 87, 0.452);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(48, 48, 48);
+    
+}
+
+   body{
+      background-color:#292929;
+      margin:0;
+      scrollbar-width: thin;
+    }
+    ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #222222;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: rgba(255, 255, 255, 0.555);
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+li a:hover {
+  background-color: #1111118e;
+}
+    #editor { 
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin-top: 50px!important;
+        scrollbar-width: thin;
+    }
+	 /* Style the tab */
+   * {
+  box-sizing: border-box;
+}
+input[type=text] {
+  background-color: white;
+  color: rgb(0, 0, 0);
+}
+.tool{
+  position: fixed!important;
+
+  bottom: 0;
+  right:20px;
+  color: #333;
+  z-index: 10000;
+  background-color: rgb(255, 255, 255);
+  padding:10px;
+  border-radius: 100%;
+  opacity:0.5;
+}
+.tool:hover{
+  opacity:1;
+}
+.fa-2xl {
+  padding-left:5px;
+  padding-right:5px;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  opacity: 1;
+  -webkit-animation-name: fadeIn; /* Fade in the background */
+  -webkit-animation-duration: 0.4s;
+  animation-name: fadeIn;
+  animation-duration: 0.4s
+}
+
+/* Modal Content */
+.modal-content {
+  position: fixed;
+  bottom: 0;
+  background-color: #fefefe;
+  width: 100%;
+
+  -webkit-animation-name: slideIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: slideIn;
+  animation-duration: 0.4s
+}
+
+/* The Close Button */
+.close {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header {
+  padding:10px;
+  background-color: rgb(37, 37, 37);
+  color: white;
+  margin-left:40px;
+  
+}
+
+
+
+.modal-footer {
+
+  background-color: #5cb85c;
+  color: white;
+}
+
+/* Add Animation */
+@-webkit-keyframes slideIn {
+  from {bottom: -300px; opacity: 0} 
+  to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+  from {bottom: -300px; opacity: 0}
+  to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity: 0} 
+  to {opacity: 1}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0} 
+  to {opacity: 1}
+}
+</style>
+
+
+
+
+</head>
+<body>
+  <input style="display:none;" id="fileDialog" type="file" />
+
+	<div id="editor"></div>
+
+
+  
+  <ul>
+ 
+    <li><a onclick="fart1();"><img src = "src/icons/folder-open-regular.svg" alt="My Happy SVG"/></a></li>
+    <li><a onclick="fart();"><img src = "src/icons/save-solid.svg" alt="My Happy SVG"/></a></li>
+    <li><a onclick="undo();"><img src = "src/icons/rotate-left-solid.svg" alt="My Happy SVG"/></a></li>
+    <li><a onclick="redo();"><img src = "src/icons/rotate-right-solid.svg" alt="My Happy SVG"/></a></li>
+    <li><a onclick="copy1();"><img src = "src/icons/copy-solid.svg" alt="My Happy SVG"/></a></li>
+    <li><a onclick="paste1();"><img src = "src/icons/paste-solid.svg" alt="My Happy SVG"/></a></a></li>
+    <li><a onclick="fontup();"><img src = "src/icons/magnifying-glass-plus-solid.svg" alt="My Happy SVG"/></a></li>
+    <li><a onclick="fontdown();"><img src = "src/icons/magnifying-glass-minus-solid.svg" alt="My Happy SVG"/></a></li>
+    <li><a onclick="comment();"><img src = "src/icons/comment-medical-solid.svg" alt="My Happy SVG"/></a></li>
+    <li><a onclick="codein();"><img src = "src/icons/file-code-regular.svg" alt="My Happy SVG"/></a></li>
+    <li style="float:right"><a onclick="viewdock();"><img src = "src/icons/book-solid.svg" alt="My Happy SVG"/></i></a></li>
+    <li style="float:right" id="myBtn"><a onclick="openNav()"><img src = "src/icons/searchengin.svg" alt="My Happy SVG"/></i></a></li>
+ 
+    
+  </ul>
+  <input id="file-input1" type="file" name="name" style="display: none;" />
+
+  <div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close" style="margin-top:-5px;">&times;</span>
+        <input type="text" id="search" placeholder="Search.."> 
+        <button type="button" onclick="justsearch()">Find!</button> 
+        <button type="button" onclick="next()">next</button> 
+        <button type="button" onclick="last()">last</button> 
+        <input type="text" id="replace" placeholder="Replace with..."> 
+        <button type="button" onclick="replace()">replace</button> 
+        <button type="button" onclick="replaceall()">replace all</button> 
+      </div>
+      <div class="modal-body">
+        
+      </div>
+    </div>
+  
+  </div>
+  
+
+
+  <link rel="stylesheet" href="src/font-awesome.min.css">
+  <script src = "src/FileSaver.min.js"> </script>  
+<script src="src/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/xml");
+	editor.setOptions({
+		showPrintMargin: false,
+		mergeUndoDeltas: "always",
+	});
+
+
+
+
+
+
+var menu = new nw.Menu({type: 'menubar'});
+
+var submenu = new nw.Menu();
+var submenu1 = new nw.Menu();
+submenu.append(new nw.MenuItem({ label: 'Show print margins' }).on("click", function() {
+	editor.setOptions({
+		showPrintMargin: true,
+	});
+    }));
+	submenu.append(new nw.MenuItem({ label: 'Disable print margins' }).on("click", function() {
+	editor.setOptions({
+		showPrintMargin: false,
+	});
+    }));
+	submenu.append(new nw.MenuItem({ label: 'Load Boilerplate' }).on("click", function() {
+		let boilerplate = `<?xml version="1.0" encoding="UTF-8"?>
+<DecentSampler minVersion="1.0.0">
+  <ui width="812" height="375" layoutMode="relative"
+      bgMode="top_left">
+    <tab name="main">
+      <labeled-knob x="445" y="75" width="90" textSize="16" textColor="AA000000" 
+                    trackForegroundColor="CC000000" trackBackgroundColor="66999999" 
+                    label="Attack" type="float" minValue="0.0" maxValue="4.0" value="0.01" >
+        <binding type="amp" level="instrument" position="0" parameter="ENV_ATTACK" />
+      </labeled-knob>
+      <labeled-knob x="515" y="75" width="90" textSize="16" textColor="AA000000" 
+                    trackForegroundColor="CC000000" trackBackgroundColor="66999999" 
+                    label="Release" type="float" minValue="0.0" maxValue="20.0" value="1" >
+        <binding type="amp" level="instrument" position="0" parameter="ENV_RELEASE" />
+      </labeled-knob>
+      <labeled-knob x="585" y="75" width="90" textSize="16" textColor="AA000000" 
+                    trackForegroundColor="CC000000" trackBackgroundColor="66999999" 
+                    label="Chorus" type="float" minValue="0.0" maxValue="1" value="0" >
+        <binding type="effect" level="instrument" position="1" parameter="FX_MIX" />
+      </labeled-knob>
+      <labeled-knob x="655" y="75" width="90" textSize="16" textColor="FF000000"
+                    trackForegroundColor="CC000000" trackBackgroundColor="66999999"
+                    label="Tone" type="float" minValue="0" maxValue="1" value="1">
+        <binding type="effect" level="instrument" position="0" parameter="FX_FILTER_FREQUENCY" translation="table" 
+translationTable="0,33;0.3,150;0.4,450;0.5,1100;0.7,4100;0.9,11000;1.0001,22000"/>
+      </labeled-knob>
+      <labeled-knob x="725" y="75" width="90" textSize="16" textColor="AA000000" 
+                    trackForegroundColor="CC000000" trackBackgroundColor="66999999" 
+                    label="Reverb" type="percent" minValue="0" maxValue="100" 
+                    textColor="FF000000" value="50">
+        <binding type="effect" level="instrument" position="2" 
+                 parameter="FX_REVERB_WET_LEVEL" translation="linear" 
+                 translationOutputMin="0" translationOutputMax="1" />
+      </labeled-knob>
+    </tab>
+  </ui>
+  <groups attack="0.000" decay="25" sustain="1.0" release="0.430" volume="-3dB">
+    <group>
+      <sample loNote="21" hiNote="21" rootNote="21" path="DefaultPiano-21.aif"
+              length="805888"/>
+      <sample loNote="22" hiNote="33" rootNote="33" path="DefaultPiano-33.aif"
+              length="807552"/>
+      <sample loNote="34" hiNote="45" rootNote="45" path="DefaultPiano-45.aif"
+              length="759168"/>
+      <sample loNote="46" hiNote="57" rootNote="57" path="DefaultPiano-57.aif"
+              length="756480"/>
+      <sample loNote="58" hiNote="69" rootNote="69" path="DefaultPiano-69.aif"
+              length="758656"/>
+      <sample loNote="70" hiNote="77" rootNote="77" path="DefaultPiano-77.aif"
+              length="595328"/>
+      <sample loNote="78" hiNote="89" rootNote="89" path="DefaultPiano-89.aif"
+              length="457600"/>
+      <sample loNote="90" hiNote="96" rootNote="96" path="DefaultPiano-96.aif"
+              length="469888"/>
+      <sample loNote="94" hiNote="108" rootNote="108" path="DefaultPiano-108.aif"
+              length="75264"/>
+    </group>
+  </groups>
+  <effects>
+    <effect type="lowpass" frequency="22000.0"/>
+    <effect type="chorus"  mix="0.0" modDepth="0.2" modRate="0.2" />
+    <effect type="reverb" wetLevel="0.5"/>
+  </effects>
+  <midi>
+    <!-- This causes MIDI CC 1 to control the 4th knob (cutoff) -->
+    <cc number="1">
+      <binding level="ui" type="control" parameter="VALUE" position="3" 
+               translation="linear" translationOutputMin="0" 
+               translationOutputMax="1" />
+    </cc>
+  </midi>
+</DecentSampler>`
+	editor.setValue(boilerplate, -1);
+    }));
+  
+	submenu.append(new nw.MenuItem({ label: 'Add Knob' }).on("click", function() {
+		let knob = `<labeled-knob x="445" y="75" width="90" textSize="16" textColor="AA000000" 
+                    trackForegroundColor="CC000000" trackBackgroundColor="66999999" 
+                    label="Attack" type="float" minValue="0.0" maxValue="4.0" value="0.01" >
+        <binding type="amp" level="instrument" position="0" parameter="ENV_ATTACK" />
+      </labeled-knob>`
+	editor.insert(knob);
+    }));
+
+    submenu.append(new nw.MenuItem({ label: 'DOCS' }).on("click", function() {
+
+      require('nw.gui').Shell.openExternal( "https://www.decentsamples.com/docs/format-documentation.html" );
+      return false;
+
+    }));
+    submenu1.append(new nw.MenuItem({ label: 'dark' }).on("click", function() {
+      editor.setTheme("ace/theme/solarized_dark");
+
+    }));
+    submenu1.append(new nw.MenuItem({ label: 'tomorrow_night_bright' }).on("click", function() {
+      editor.setTheme("ace/theme/tomorrow_night_bright");
+
+    }));
+    submenu1.append(new nw.MenuItem({ label: 'Open' }).on("click", function() {
+      function chooseFile(name) {
+    var chooser = document.querySelector(name);
+    chooser.addEventListener("change", function(evt) {
+      fetch(this.value)
+  .then((res) => res.text())
+  .then((text) => {
+    editor.setValue(text);
+   })
+  .catch((e) => console.error(e));
+    }, false);
+
+    chooser.click();  
+  }
+  chooseFile('#fileDialog');
+    }));
+
+    submenu1.append(new nw.MenuItem({ label: 'save' }).on("click", function() {
+      var blob = new Blob([editor.getValue()], {
+  type: "text/plain;charset=utf-8",
+});
+saveAs(blob, "download.dspreset");
+
+    }));
+// Create and append the 1st level menu to the menubar
+menu.append(new nw.MenuItem({
+  label: 'File',
+  submenu: submenu
+}));
+menu.append(new nw.MenuItem({
+  label: 'Insert',
+  submenu: submenu
+}));
+menu.append(new nw.MenuItem({
+  label: 'Themes',
+  submenu: submenu1
+}));
+
+//nw.Window.get().menu = menu;
+
+function fart(){
+  var blob = new Blob([editor.getValue()], {
+  type: "text/plain;charset=utf-8",
+});
+saveAs(blob, "download.dspreset");
+  
+} 
+function fart1(){
+  function chooseFile(name) {
+    var chooser = document.querySelector(name)
+    
+    chooser.addEventListener("change", function(evt) {
+        fetch(this.value).then((res) => res.text()).then((text) => {
+          if (this.files && this.files[0]) {
+            editor.setValue(text);
+          }else {
+            editor.setValue(editor.getValue());
+          }
+        });
+
+   })
+      chooser.click();  
+  }
+ 
+    chooseFile('#fileDialog');
+  
+} 
+function comment(){
+  editor.insert("<!-- comment -->")
+
+}
+function viewdock(){
+  require('nw.gui').Shell.openExternal( "https://www.decentsamples.com/docs/format-documentation.html" );
+      return false;
+}
+function undo(){
+
+  editor.undo();
+}
+function redo(){
+
+editor.redo();
+}
+
+function copy1(){
+  var text = editor.getCopyText();
+editor.execCommand("copy");// or cut
+navigator.clipboard.writeText(text);
+
+};
+  
+function fontup(){
+  editor.setOptions({
+  fontSize: "20pt"
+});
+
+}
+function fontdown(){
+  editor.setOptions({
+  fontSize: "9pt"
+});
+
+}
+function codein(){
+  let boilerplate = `<?xml version="1.0" encoding="UTF-8"?>
+<DecentSampler minVersion="1.0.0">
+  <ui width="812" height="375" layoutMode="relative"
+      bgMode="top_left">
+    <tab name="main">
+      <labeled-knob x="445" y="75" width="90" textSize="16" textColor="AA000000" 
+                    trackForegroundColor="CC000000" trackBackgroundColor="66999999" 
+                    label="Attack" type="float" minValue="0.0" maxValue="4.0" value="0.01" >
+        <binding type="amp" level="instrument" position="0" parameter="ENV_ATTACK" />
+      </labeled-knob>
+      <labeled-knob x="515" y="75" width="90" textSize="16" textColor="AA000000" 
+                    trackForegroundColor="CC000000" trackBackgroundColor="66999999" 
+                    label="Release" type="float" minValue="0.0" maxValue="20.0" value="1" >
+        <binding type="amp" level="instrument" position="0" parameter="ENV_RELEASE" />
+      </labeled-knob>
+      <labeled-knob x="585" y="75" width="90" textSize="16" textColor="AA000000" 
+                    trackForegroundColor="CC000000" trackBackgroundColor="66999999" 
+                    label="Chorus" type="float" minValue="0.0" maxValue="1" value="0" >
+        <binding type="effect" level="instrument" position="1" parameter="FX_MIX" />
+      </labeled-knob>
+      <labeled-knob x="655" y="75" width="90" textSize="16" textColor="FF000000"
+                    trackForegroundColor="CC000000" trackBackgroundColor="66999999"
+                    label="Tone" type="float" minValue="0" maxValue="1" value="1">
+        <binding type="effect" level="instrument" position="0" parameter="FX_FILTER_FREQUENCY" translation="table" 
+translationTable="0,33;0.3,150;0.4,450;0.5,1100;0.7,4100;0.9,11000;1.0001,22000"/>
+      </labeled-knob>
+      <labeled-knob x="725" y="75" width="90" textSize="16" textColor="AA000000" 
+                    trackForegroundColor="CC000000" trackBackgroundColor="66999999" 
+                    label="Reverb" type="percent" minValue="0" maxValue="100" 
+                    textColor="FF000000" value="50">
+        <binding type="effect" level="instrument" position="2" 
+                 parameter="FX_REVERB_WET_LEVEL" translation="linear" 
+                 translationOutputMin="0" translationOutputMax="1" />
+      </labeled-knob>
+    </tab>
+  </ui>
+  <groups attack="0.000" decay="25" sustain="1.0" release="0.430" volume="-3dB">
+    <group>
+      <sample loNote="21" hiNote="21" rootNote="21" path="DefaultPiano-21.aif"
+              length="805888"/>
+      <sample loNote="22" hiNote="33" rootNote="33" path="DefaultPiano-33.aif"
+              length="807552"/>
+      <sample loNote="34" hiNote="45" rootNote="45" path="DefaultPiano-45.aif"
+              length="759168"/>
+      <sample loNote="46" hiNote="57" rootNote="57" path="DefaultPiano-57.aif"
+              length="756480"/>
+      <sample loNote="58" hiNote="69" rootNote="69" path="DefaultPiano-69.aif"
+              length="758656"/>
+      <sample loNote="70" hiNote="77" rootNote="77" path="DefaultPiano-77.aif"
+              length="595328"/>
+      <sample loNote="78" hiNote="89" rootNote="89" path="DefaultPiano-89.aif"
+              length="457600"/>
+      <sample loNote="90" hiNote="96" rootNote="96" path="DefaultPiano-96.aif"
+              length="469888"/>
+      <sample loNote="94" hiNote="108" rootNote="108" path="DefaultPiano-108.aif"
+              length="75264"/>
+    </group>
+  </groups>
+  <effects>
+    <effect type="lowpass" frequency="22000.0"/>
+    <effect type="chorus"  mix="0.0" modDepth="0.2" modRate="0.2" />
+    <effect type="reverb" wetLevel="0.5"/>
+  </effects>
+  <midi>
+    <!-- This causes MIDI CC 1 to control the 4th knob (cutoff) -->
+    <cc number="1">
+      <binding level="ui" type="control" parameter="VALUE" position="3" 
+               translation="linear" translationOutputMin="0" 
+               translationOutputMax="1" />
+    </cc>
+  </midi>
+</DecentSampler>`
+	editor.setValue(boilerplate, -1);
+
+}
+function paste1(){
+  navigator.clipboard.readText().then(function(text) {
+    editor.execCommand("paste", text)
+})
+}
+function findme(){
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on the button, open the modal
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+} 
+}
+function justsearch(){
+  editor.findAll(document.getElementById("search").value,{
+  backwards: false,
+  wrap: false,
+  caseSensitive: false,
+  wholeWord: false,
+  regExp: false
+});
+
+
+
+};
+function replaceall(){
+  editor.findAll(document.getElementById("search").value,{
+  backwards: false,
+  wrap: false,
+  caseSensitive: false,
+  wholeWord: false,
+  regExp: false
+});
+editor.replaceAll(document.getElementById("replace").value);
+
+
+};
+function replace(){
+  editor.find(document.getElementById("search").value,{
+  backwards: false,
+  wrap: false,
+  caseSensitive: false,
+  wholeWord: false,
+  regExp: false
+});
+editor.replace(document.getElementById("replace").value);
+
+
+};
+function next(){
+  editor.findNext();
+}
+function last(){
+  editor.findPrevious();
+}
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
+</body>
+</html>
